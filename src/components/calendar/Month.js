@@ -6,14 +6,17 @@ import { reducer, initialState, dispatchUpdateState } from './Utils'
 const weekdayshort = moment.weekdaysShort();
 
 export default function Calendar({
-  filter, setFilter,
-  displaySetting, setDisplaySetting
+  setFilter,
+  displaySetting,
+  setDisplaySetting,
+  currentDateObj,
+  setCurrentDateObj
 }) {
   const [state, dispatch] = useReducer(reducer, initialState, initFunction);
 
   function initFunction(initialState) {
     if (displaySetting.length > 1) {
-      const dateObject = moment(displaySetting.replace("M", ""), "DD/MM/YYYY")
+      const dateObject = moment(currentDateObj)
       return {
         ...initialState,
         dateObject: dateObject
@@ -228,7 +231,14 @@ export default function Calendar({
             let date = currentDateFormat.split("/")
             date[0] = currentDate
             date = date.join("/")
-            setDisplaySetting(`D${date}`)
+            date = moment(date, "DD/MM/YYYY")
+            setCurrentDateObj(date)
+            setDisplaySetting(`D`)
+            setFilter(prev => ({
+              ...prev,
+              startDate: date.startOf('d'),
+              endDate: date.endOf('d')
+            }))
           }}
         >
           {d}

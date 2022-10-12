@@ -4,15 +4,18 @@ import * as Utils from "./scripts";
 
 export default function TodoApp({
   filter, setFilter,
-  displaySetting
+  displaySetting,
+  currentDateObj
 }) {
   const [tasks, setTasks] = useState([]);
+  const [total, setTotal] = useState(0)
+
   const onSubmit = (e) => {
     e.preventDefault();
     const inputNode = e.target["todo-text"];
     const newTaskText = inputNode.value;
-    const newTask = Utils.createTask(newTaskText);
-    setTasks((prev) => [newTask, ...prev]);
+    const newTask = Utils.createTask(newTaskText, currentDateObj);
+    setTasks((prev) => [...prev, newTask]);
     inputNode.value = "";
   };
 
@@ -23,40 +26,59 @@ export default function TodoApp({
     }
   };
 
-  const onGetTask = useCallback((filter) => {
-    let dataTask = Utils.getTask(
+  const onGetTask = useCallback((filter, cb) => {
+    const res = Utils.getTask(
       filter.limit,
       filter.skip,
       filter.searchText,
-      filter.filter
+      filter.filter,
+      filter.startDate,
+      filter.endDate
     );
-    setTasks(dataTask);
+    if (!res) {
+      return;
+    }
+
+    setTasks(prev => prev.length > 0 ? ([...prev, ...res.dataTask]) : res.dataTask)
+    setTotal(res.total)
   }, []);
 
   useEffect(() => {
+    console.log(filter)
     onGetTask(filter);
-  }, [onGetTask, filter]);
+  }, [onGetTask, filter, displaySetting]);
+
+  const onScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    const newSkip = filter.skip + 1
+    if (
+      scrollTop + clientHeight === scrollHeight &&
+      filter.limit * newSkip < total
+    ) {
+      setFilter(prev => ({ ...prev, skip: newSkip }))
+    }
+  }
 
   return (
     <div className="todo-app">
       {
         displaySetting.indexOf("D") > -1 && (
-          <form onSubmit={onSubmit}>
+          <form className="todo-app-form" onSubmit={onSubmit}>
             <input id="todo-text" placeholder="Nhập gì đó ..." required />
             <button type="submit">Tạo</button>
           </form>
         )
       }
 
-      <ul>
-        {tasks.map((task) => (
-          <li id={task.id} key={task.id}>
-            <span>{task.label}</span>
+      <ul className="task-list" onScroll={onScroll}>
+        {tasks.reverse().map((task) => (
+          <li id={task.id} key={task.id} className="task">
             <input
               type="checkbox"
               checked={task.isDone}
               onChange={(e) => onCheckTask(e.target.checked, task.id)}
             />
+            <span>{task.label}</span>
           </li>
         ))}
       </ul>

@@ -1,12 +1,11 @@
 import moment from 'moment';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 import "./calendar.css"
 
 function Date({
-  displaySetting,
-  setDisplaySetting
+  setDisplaySetting,
+  currentDateObj, setCurrentDateObj
 }) {
-  const [currentDateObj, setCurrentDateObj] = useState(moment(displaySetting.replace("D", ""), "DD/MM/YYYY"))
   const timer = useRef()
 
   const onPrev = () => {
@@ -42,7 +41,7 @@ function Date({
         <span
           className="calendar-label"
           onClick={() => {
-            setDisplaySetting(`M${currentDateObj.format("DD/MM/YYYY")}`)
+            setDisplaySetting(`M`)
           }}
         >
           Quay lại
