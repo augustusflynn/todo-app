@@ -5,8 +5,7 @@ export const initialState = {
   showMonthTable: false,
   showDateTable: true,
   dateObject: moment(),
-  allmonths: moment.months(),
-  selectedDay: null
+  allmonths: moment.months()
 };
 
 const UPDATE_STATE = "UPDATE_STATE";

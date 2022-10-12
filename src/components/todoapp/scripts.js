@@ -4,6 +4,7 @@ const LOCAL_STORAGE_KEY = "TODO_TASK";
 //   id: Number;
 //   label: String;
 //   isDone: Boolean;
+//   datetime: Date;
 // }
 
 export const createTask = (text) => {

@@ -6,9 +6,22 @@ import { reducer, initialState, dispatchUpdateState } from './Utils'
 const weekdayshort = moment.weekdaysShort();
 
 export default function Calendar({
-  filter, setFilter
+  filter, setFilter,
+  displaySetting, setDisplaySetting
 }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, initialState, initFunction);
+
+  function initFunction(initialState) {
+    if (displaySetting.length > 1) {
+      const dateObject = moment(displaySetting.replace("M", ""), "DD/MM/YYYY")
+      return {
+        ...initialState,
+        dateObject: dateObject
+      }
+    } else {
+      return initialState
+    }
+  }
 
   const daysInMonth = () => {
     return state.dateObject.daysInMonth();
@@ -18,13 +31,9 @@ export default function Calendar({
     return state.dateObject.format("Y");
   };
 
-  const currentDay = () => {
-    return parseInt(state.dateObject.format("D"));
-  };
-
   const firstDayOfMonth = () => {
     let dateObject = state.dateObject;
-    let firstDay = moment(dateObject).startOf("month").format("d"); // Day of week 0...1..5...6
+    let firstDay = moment(dateObject).startOf("month").format("d"); // index of day in week
     return firstDay;
   };
 
@@ -194,12 +203,6 @@ export default function Calendar({
     );
   };
 
-  const onDayClick = (e, d) => {
-    dispatch(dispatchUpdateState({
-      selectedDay: d
-    }));
-  };
-
   let weekdayshortname = weekdayshort.map((day) => {
     return <th key={Math.random()}>{day}</th>;
   });
@@ -210,12 +213,22 @@ export default function Calendar({
   }
   let daysInMonthArray = [];
   for (let d = 1; d <= daysInMonth(); d++) {
-    let isCurrentDay = d === currentDay() ? "today" : "";
+    let currentDateFormat = state.dateObject.format("DD/MM/YYYY")
+    let currentDate = d < 10 ? `0${d}` : d
+    let today = moment().format("DD/MM/YYYY")
+    today = today.split("/")
+    today[0] = currentDate
+    today = today.join("/")
+
+    let isCurrentDay = currentDateFormat === today ? "today" : "";
     daysInMonthArray.push(
       <td key={Math.random()} className={`calendar-day ${isCurrentDay}`}>
         <span
-          onClick={(e) => {
-            onDayClick(e, d);
+          onClick={() => {
+            let date = currentDateFormat.split("/")
+            date[0] = currentDate
+            date = date.join("/")
+            setDisplaySetting(`D${date}`)
           }}
         >
           {d}
@@ -249,9 +262,7 @@ export default function Calendar({
     <div className="tail-datetime-calendar">
       <div className="calendar-navi">
         <span
-          onClick={(e) => {
-            onPrev();
-          }}
+          onClick={onPrev}
           className="calendar-button button-prev"
         />
         {!state.showMonthTable && (

@@ -2,7 +2,10 @@ import React, { useCallback, useEffect, useState } from "react";
 import "./todoapp.css";
 import * as Utils from "./scripts";
 
-export default function TodoApp({ filter }) {
+export default function TodoApp({
+  filter, setFilter,
+  displaySetting
+}) {
   const [tasks, setTasks] = useState([]);
   const onSubmit = (e) => {
     e.preventDefault();
@@ -36,25 +39,27 @@ export default function TodoApp({ filter }) {
 
   return (
     <div className="todo-app">
-      <div>
-        <form onSubmit={onSubmit}>
-          <input id="todo-text" placeholder="Nhập gì đó ..." required />
-          <button type="submit">Tạo</button>
-        </form>
+      {
+        displaySetting.indexOf("D") > -1 && (
+          <form onSubmit={onSubmit}>
+            <input id="todo-text" placeholder="Nhập gì đó ..." required />
+            <button type="submit">Tạo</button>
+          </form>
+        )
+      }
 
-        <ul>
-          {tasks.map((task) => (
-            <li id={task.id} key={task.id}>
-              <span>{task.label}</span>
-              <input
-                type="checkbox"
-                checked={task.isDone}
-                onChange={(e) => onCheckTask(e.target.checked, task.id)}
-              />
-            </li>
-          ))}
-        </ul>
-      </div>
+      <ul>
+        {tasks.map((task) => (
+          <li id={task.id} key={task.id}>
+            <span>{task.label}</span>
+            <input
+              type="checkbox"
+              checked={task.isDone}
+              onChange={(e) => onCheckTask(e.target.checked, task.id)}
+            />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

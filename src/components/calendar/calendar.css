@@ -1,7 +1,9 @@
 .tail-datetime-calendar {
   width: 245px;
   height: auto;
-  margin: 15px;
+  left: 0;
+  right: 0;
+  margin: auto;
   padding: 0;
   display: block;
   overflow: hidden;
@@ -262,4 +264,25 @@
   font-size: 12px;
   line-height: 12px;
 }
-/* @end tail.DateTime */
+
+.tail-datetime-calendar .calendar-detail-date {
+  text-align: center;
+}
+
+.tail-datetime-calendar .calendar-detail-date .month {
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 30px;
+}
+
+.tail-datetime-calendar .calendar-detail-date .time {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 28px;
+}
+
+.tail-datetime-calendar .calendar-detail-date .date {
+  font-size: 66px;
+  font-weight: bold;
+  line-height: 100px;
+}
