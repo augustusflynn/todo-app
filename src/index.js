@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 
 import { CalendarMonth, CalendarDate } from "./components/calendar";
-import TodoApp from "./components/todoapp";
 import './styles.css'
 import moment from "moment";
 
@@ -36,7 +35,6 @@ function App() {
           <CalendarDate {...props} />
         )
       }
-      <TodoApp {...props} />
     </>
   );
 }

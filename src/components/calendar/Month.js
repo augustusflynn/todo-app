@@ -2,11 +2,13 @@ import React, { useReducer } from "react";
 import moment from "moment";
 import "./calendar.css";
 import { reducer, initialState, dispatchUpdateState } from './Utils'
+import TodoApp from "../todoapp";
+import { getTask } from "../todoapp/scripts";
 
 const weekdayshort = moment.weekdaysShort();
 
 export default function Calendar({
-  setFilter,
+  setFilter, filter,
   displaySetting,
   setDisplaySetting,
   currentDateObj,
@@ -218,27 +220,36 @@ export default function Calendar({
   for (let d = 1; d <= daysInMonth(); d++) {
     let currentDateFormat = state.dateObject.format("DD/MM/YYYY")
     let currentDate = d < 10 ? `0${d}` : d
+
     let today = moment().format("DD/MM/YYYY")
     today = today.split("/")
     today[0] = currentDate
     today = today.join("/")
 
+    let date = currentDateFormat.split("/")
+    date[0] = currentDate
+    date = date.join("/")
+    date = moment(date, "DD/MM/YYYY")
+
     let isCurrentDay = currentDateFormat === today ? "today" : "";
+    let isHasTask = getTask(1, 0, '', {}, date.startOf('day'), date.endOf('d'))
+    let classNameIsHasTask = isHasTask && isHasTask.total > 0 ? "task" : ""
+    let classNamePrevDate = new Date().toISOString() > date.toISOString() ? "prev-date" : ""
+
     daysInMonthArray.push(
-      <td key={Math.random()} className={`calendar-day ${isCurrentDay}`}>
+      <td key={Math.random()} className={`calendar-day ${isCurrentDay} ${classNameIsHasTask} ${classNamePrevDate}`}>
         <span
           onClick={() => {
-            let date = currentDateFormat.split("/")
-            date[0] = currentDate
-            date = date.join("/")
-            date = moment(date, "DD/MM/YYYY")
             setCurrentDateObj(date)
             setDisplaySetting(`D`)
-            setFilter(prev => ({
-              ...prev,
-              startDate: date.startOf('d'),
-              endDate: date.endOf('d')
-            }))
+            setFilter({
+              limit: 20,
+              skip: 0,
+              filter: {},
+              searchText: "",
+              startDate: date.startOf('day').toDate(),
+              endDate: date.endOf('day').toDate()
+            })
           }}
         >
           {d}
@@ -269,49 +280,57 @@ export default function Calendar({
   });
 
   return (
-    <div className="tail-datetime-calendar">
-      <div className="calendar-navi">
-        <span
-          onClick={onPrev}
-          className="calendar-button button-prev"
-        />
-        {!state.showMonthTable && (
+    <>
+      <div className="tail-datetime-calendar">
+        <div className="calendar-navi">
           <span
-            onClick={showMonth}
+            onClick={onPrev}
+            className="calendar-button button-prev"
+          />
+          {!state.showMonthTable && (
+            <span
+              onClick={showMonth}
+              className="calendar-label"
+            >
+              {month()}
+            </span>
+          )}
+          <span
             className="calendar-label"
+            onClick={showYearTable}
           >
-            {month()}
+            {year()}
           </span>
-        )}
-        <span
-          className="calendar-label"
-          onClick={showYearTable}
-        >
-          {year()}
-        </span>
-        <span
-          onClick={onNext}
-          className="calendar-button button-next"
-        />
-      </div>
-
-      <div className="calendar-date">
-        {state.showYearTable && <YearTable props={year()} />}
-        {state.showMonthTable && (
-          <MonthList data={moment.months()} />
-        )}
-      </div>
-
-      {state.showDateTable && (
-        <div className="calendar-date">
-          <table className="calendar-day">
-            <thead>
-              <tr>{weekdayshortname}</tr>
-            </thead>
-            <tbody>{daysinmonth}</tbody>
-          </table>
+          <span
+            onClick={onNext}
+            className="calendar-button button-next"
+          />
         </div>
-      )}
-    </div>
+
+        <div className="calendar-date">
+          {state.showYearTable && <YearTable props={year()} />}
+          {state.showMonthTable && (
+            <MonthList data={moment.months()} />
+          )}
+        </div>
+
+        {state.showDateTable && (
+          <div className="calendar-date">
+            <table className="calendar-day">
+              <thead>
+                <tr>{weekdayshortname}</tr>
+              </thead>
+              <tbody>{daysinmonth}</tbody>
+            </table>
+          </div>
+        )}
+      </div>
+      <TodoApp
+        currentDateObj={state.dateObject}
+        filter={filter}
+        setFilter={setFilter}
+        displaySetting={displaySetting}
+      />
+    </>
   );
 }

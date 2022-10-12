@@ -1,3 +1,5 @@
+import moment from "moment";
+
 const LOCAL_STORAGE_KEY = "TODO_TASK";
 
 // @type Task {
@@ -7,15 +9,16 @@ const LOCAL_STORAGE_KEY = "TODO_TASK";
 //   datetime: Date;
 // }
 
-export const createTask = (text) => {
+export const createTask = (text, date) => {
   let dataTask = window.localStorage.getItem(LOCAL_STORAGE_KEY);
   dataTask = JSON.parse(dataTask || "[]");
   const newTask = {
     id: dataTask.length,
     label: text,
-    isDone: false
+    isDone: false,
+    datetime: date.toDate().toISOString()
   };
-  dataTask.unshift(newTask);
+  dataTask.push(newTask);
   _storeTask(dataTask);
   return newTask;
 };
@@ -45,14 +48,16 @@ export const getTask = (limit, skip, searchText, filter = {}, startDate, endDate
   }
   if (searchText) {
     dataTask = dataTask.filter(
-      (_task) => _task.label.localeCompare(searchText) > -1
+      (_task) => _task.label.indexOf(searchText) > -1
     );
   }
   let result = [];
   if (filter && Object.keys(filter).length > 0) {
     for (let key in filter) {
       for (let task of dataTask) {
-        if (task[key] === filter[key]) {
+        if (key === 'isDone' && filter[key] === undefined) {
+          result.push(task);
+        } else if (task[key] === filter[key]) {
           result.push(task);
         }
       }
@@ -61,25 +66,26 @@ export const getTask = (limit, skip, searchText, filter = {}, startDate, endDate
     result = dataTask;
   }
 
-  // if (startDate) {
-  //   for (let task of dataTask) {
-  //     if (task[key] === filter[key]) {
-  //       result.push(task);
-  //     }
-  //   }
-  // }
+  if (startDate) {
+    result = result.filter(_task => {
+      if (moment(startDate).toISOString() <= new Date(_task.datetime).toISOString()) {
+        return true
+      }
+      return false;
+    });
+  }
 
-  // if (endDate) {
-  //   for (let task of dataTask) {
-  //     if (task[key] === filter[key]) {
-  //       result.push(task);
-  //     }
-  //   }
-  // }
-
+  if (endDate) {
+    result = result.filter(_task => {
+      if (moment(endDate).toISOString() >= new Date(_task.datetime).toISOString()) {
+        return true
+      }
+      return false;
+    });
+  }
   result.sort((a, b) => a.id - b.id);
   result = result.slice(start, end);
-  return { dataTask: result, total: dataTask.length };
+  return { dataTask: result, total: result.length };
 };
 
 const _storeTask = (dataTask) => {

@@ -1,10 +1,12 @@
 import moment from 'moment';
 import React, { useEffect, useRef } from 'react'
+import TodoApp from '../todoapp';
 import "./calendar.css"
 
 function Date({
-  setDisplaySetting,
-  currentDateObj, setCurrentDateObj
+  setDisplaySetting, displaySetting,
+  currentDateObj, setCurrentDateObj,
+  filter, setFilter
 }) {
   const timer = useRef()
 
@@ -32,31 +34,47 @@ function Date({
 
 
   return (
-    <div className="tail-datetime-calendar">
-      <div className="calendar-navi">
-        <span
-          onClick={onPrev}
-          className="calendar-button button-prev"
-        />
-        <span
-          className="calendar-label"
-          onClick={() => {
-            setDisplaySetting(`M`)
-          }}
-        >
-          Quay lại
-        </span>
-        <span
-          onClick={onNext}
-          className="calendar-button button-next"
-        />
+    <>
+      <div className="tail-datetime-calendar">
+        <div className="calendar-navi">
+          <span
+            onClick={onPrev}
+            className="calendar-button button-prev"
+          />
+          <span
+            className="calendar-label"
+            onClick={() => {
+              setDisplaySetting(`M`)
+              setFilter({
+                limit: 20,
+                skip: 0,
+                filter: {},
+                searchText: "",
+                startDate: moment(currentDateObj).startOf('month').toDate(),
+                endDate: moment(currentDateObj).endOf('month').toDate()
+              })
+            }}
+          >
+            Quay lại
+          </span>
+          <span
+            onClick={onNext}
+            className="calendar-button button-next"
+          />
+        </div>
+        <div className="calendar-detail-date">
+          <div className='month'>{currentDateObj.get("month")}/{currentDateObj.get("year")}</div>
+          <div className='date'>{currentDateObj.get("D")}</div>
+          <div ref={timer} className="time" />
+        </div>
       </div>
-      <div className="calendar-detail-date">
-        <div className='month'>{currentDateObj.get("month")}/{currentDateObj.get("year")}</div>
-        <div className='date'>{currentDateObj.get("D")}</div>
-        <div ref={timer} className="time" />
-      </div>
-    </div>
+      <TodoApp
+        currentDateObj={currentDateObj}
+        filter={filter}
+        setFilter={setFilter}
+        displaySetting={displaySetting}
+      />
+    </>
   )
 }
 

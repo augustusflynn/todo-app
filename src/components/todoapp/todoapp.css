@@ -54,3 +54,37 @@ span {
   line-height: 26px;
   font-weight: 500px; 
 }
+
+.todo-app .todo-app-filter {
+  color: #fff;
+  margin-bottom: 24px;
+}
+
+.todo-app .todo-app-filter .title {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 600px;
+}
+
+.todo-app .todo-app-filter .status-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin: 12px 0;
+}
+
+.todo-app .todo-app-filter .status-wrapper .status {
+  font-size: 22px;
+  line-height: 26px;
+  margin: 8px 0;
+}
+
+.todo-app .todo-app-filter .search input {
+  background-color: transparent;
+  outline: none;
+  border: 1px solid #fff;
+  line-height: 34px;
+  font-size: 20px;
+  padding-left: 8px;
+  color: #fff;
+}
