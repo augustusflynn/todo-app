@@ -88,6 +88,39 @@ export const getTask = (limit, skip, searchText, filter = {}, startDate, endDate
   return { dataTask: result, total: result.length };
 };
 
+export const checkIsDoneAllTask = (startDate, endDate) => {
+  let dataTask = window.localStorage.getItem(LOCAL_STORAGE_KEY);
+  dataTask = JSON.parse(dataTask || "[]");
+
+  if (startDate) {
+    dataTask = dataTask.filter(_task => {
+      if (moment(startDate).toISOString() <= new Date(_task.datetime).toISOString()) {
+        return true
+      }
+      return false;
+    });
+  }
+
+  if (endDate) {
+    dataTask = dataTask.filter(_task => {
+      if (moment(endDate).toISOString() >= new Date(_task.datetime).toISOString()) {
+        return true
+      }
+      return false;
+    });
+  }
+
+  const dataTaskDone = dataTask.filter(_task => _task.isDone);
+  return (dataTask.length > 0 && dataTask.length === dataTaskDone.length);
+}
+
 const _storeTask = (dataTask) => {
   window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataTask));
 };
+
+export const deleteTask = (id) => {
+  let dataTask = window.localStorage.getItem(LOCAL_STORAGE_KEY);
+  dataTask = JSON.parse(dataTask || "[]");
+  dataTask = dataTask.filter(_task => _task.id !== id);
+  window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataTask))
+}

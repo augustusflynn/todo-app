@@ -136,6 +136,9 @@
 .tail-datetime-calendar .calendar-date table tbody tr > *.prev-date {
   color: #33445550;
 }
+.tail-datetime-calendar .calendar-date table tbody tr > *.next-date {
+  font-weight: 600;
+}
 .tail-datetime-calendar .calendar-date table tbody tr > *.today {
   color: #3296c8;
 }
@@ -143,6 +146,16 @@
   content: " ";
   position: absolute;
   background-color: red;
+  width: 10px;
+  height: 10px;
+  right: 2px;
+  top: 2px;
+  border-radius: 5px;
+}
+.tail-datetime-calendar .calendar-date table tbody tr > *.task-done-all::before {
+  content: " ";
+  position: absolute;
+  background-color:rgb(40, 148, 71);
   width: 10px;
   height: 10px;
   right: 2px;

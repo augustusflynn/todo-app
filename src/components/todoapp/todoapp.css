@@ -43,16 +43,31 @@ span {
 .todo-app .task-list .task {
   list-style: none;
   display: flex;
-  max-width: 300px;
+  max-width: 400px;
   margin-left: auto;
   margin-right: auto;
   gap: 12px;
 }
 
-.todo-app .task-list .task span {
-  font-size: 20px;
-  line-height: 26px;
-  font-weight: 500px; 
+.todo-app .task-list .task input {
+  accent-color: #cd283c;
+}
+
+.todo-app .task-list .task * {
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.todo-app .task-list .task .task-action span {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.todo-app .task-list .task .task-done {
+  text-decoration: line-through;
+  opacity: .5;
 }
 
 .todo-app .todo-app-filter {
@@ -63,7 +78,7 @@ span {
 .todo-app .todo-app-filter .title {
   font-size: 28px;
   line-height: 36px;
-  font-weight: 600px;
+  font-weight: 600;
 }
 
 .todo-app .todo-app-filter .status-wrapper {
@@ -80,11 +95,7 @@ span {
 }
 
 .todo-app .todo-app-filter .search input {
-  background-color: transparent;
-  outline: none;
-  border: 1px solid #fff;
   line-height: 34px;
   font-size: 20px;
   padding-left: 8px;
-  color: #fff;
 }

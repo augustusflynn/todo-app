@@ -5,3 +5,10 @@ html, body {
 button {
   cursor: pointer;
 }
+
+input {
+  background-color: transparent;
+  outline: none;
+  border: 1px solid #fff;
+  color: #fff;
+}

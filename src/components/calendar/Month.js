@@ -3,7 +3,7 @@ import moment from "moment";
 import "./calendar.css";
 import { reducer, initialState, dispatchUpdateState } from './Utils'
 import TodoApp from "../todoapp";
-import { getTask } from "../todoapp/scripts";
+import { getTask, checkIsDoneAllTask } from "../todoapp/scripts";
 
 const weekdayshort = moment.weekdaysShort();
 
@@ -225,19 +225,29 @@ export default function Calendar({
     today = today.split("/")
     today[0] = currentDate
     today = today.join("/")
+    let todayObj = moment(today, "DD/MM/YYYY")
 
     let date = currentDateFormat.split("/")
     date[0] = currentDate
     date = date.join("/")
     date = moment(date, "DD/MM/YYYY")
 
+    let isHasTaskNotDone = getTask(1, 0, '', { isDone: false }, date.startOf('day'), date.endOf('d'))
+    let isDoneAllTask = checkIsDoneAllTask(todayObj.startOf('day'), todayObj.endOf('d'))
+
     let isCurrentDay = currentDateFormat === today ? "today" : "";
-    let isHasTask = getTask(1, 0, '', {}, date.startOf('day'), date.endOf('d'))
-    let classNameIsHasTask = isHasTask && isHasTask.total > 0 ? "task" : ""
+    let classNameForTask = ""
+    if (isDoneAllTask) {
+      classNameForTask = "task-done-all"
+    }
+    if (!isDoneAllTask && isHasTaskNotDone && isHasTaskNotDone.total > 0) {
+      classNameForTask = "task"
+    }
+    let classNameNextDate = new Date().toISOString() < date.toISOString() ? "next-date" : ""
     let classNamePrevDate = new Date().toISOString() > date.toISOString() ? "prev-date" : ""
 
     daysInMonthArray.push(
-      <td key={Math.random()} className={`calendar-day ${isCurrentDay} ${classNameIsHasTask} ${classNamePrevDate}`}>
+      <td key={Math.random()} className={`calendar-day ${isCurrentDay} ${classNameForTask} ${classNamePrevDate} ${classNameNextDate}`}>
         <span
           onClick={() => {
             setCurrentDateObj(date)

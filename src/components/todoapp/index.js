@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./todoapp.css";
 import * as Utils from "./scripts";
 import moment from "moment";
@@ -10,6 +10,8 @@ export default function TodoApp({
 }) {
   const [tasks, setTasks] = useState([]);
   const [total, setTotal] = useState(0)
+  const [selectedKey, setSelectedKey] = useState()
+  const editTaskRef = useRef()
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -20,10 +22,11 @@ export default function TodoApp({
     inputNode.value = "";
   };
 
-  const onCheckTask = (newVal, id) => {
-    let isSuccess = Utils.updateTask({ isDone: newVal }, id);
+  const onUpdateTask = (newVal, id, cb = () => { }) => {
+    let isSuccess = Utils.updateTask(newVal, id);
     if (isSuccess) {
       onGetTask(filter);
+      cb();
     }
   };
 
@@ -76,6 +79,11 @@ export default function TodoApp({
     onGetTask(newFilter)
   }
 
+  const onDeleteTask = (id) => {
+    Utils.deleteTask(id);
+    onGetTask();
+  }
+
   return (
     <div className="todo-app">
       <div className="todo-app-filter">
@@ -122,7 +130,7 @@ export default function TodoApp({
               id="doing"
               type="checkbox"
               checked={filter.filter.isDone === false}
-              onChange={(e) => {
+              onChange={() => {
                 onChangeFilter({
                   ...filter,
                   filter: {
@@ -167,14 +175,66 @@ export default function TodoApp({
             <input
               type="checkbox"
               checked={task.isDone}
-              onChange={(e) => onCheckTask(e.target.checked, task.id)}
+              onChange={(e) => onUpdateTask({ isDone: e.target.checked }, task.id)}
             />
-            <span>{task.label}</span>
             {
-              displaySetting === "M" && (
-                <span>- {moment(task.datetime).format("DD/MM/YYYY")}</span>
+              displaySetting.indexOf("D") > -1 && (
+                selectedKey === task.id ? (
+                  <></>
+                ) : (
+                  <span className="task-action">
+                    <span
+                      onClick={() => {
+                        setSelectedKey(task.id)
+                        setTimeout(() => {
+                          if (editTaskRef && editTaskRef.current) {
+                            editTaskRef.current.value = task.label
+                            editTaskRef.current.focus()
+                          }
+                        }, 500)
+                      }}
+                    >✎</span>
+                    <span
+                      onClick={() => {
+                        if (window.confirm('Bạn có chắc muốn xoá?')) {
+                          onDeleteTask(task.id)
+                        }
+                      }}
+                    >🗑</span>
+                  </span>
+                )
               )
             }
+            <span className={`${task.isDone ? "task-done" : ""}`}>
+              {
+                selectedKey === task.id ? (
+                  <input
+                    type="text"
+                    ref={editTaskRef}
+                    onBlur={(e) => {
+                      if (!e.target.value) {
+                        window.alert("Không được để trống")
+                      } else {
+                        onUpdateTask(
+                          { label: e.target.value },
+                          task.id,
+                          () => {
+                            setSelectedKey()
+                          }
+                        )
+                      }
+                    }}
+                  />
+                ) : (
+                  <span>{task.label}</span>
+                )
+              }
+              {
+                displaySetting === "M" && (
+                  <span>&nbsp;-&nbsp;{moment(task.datetime).format("DD/MM/YYYY")}</span>
+                )
+              }
+            </span>
           </li>
         ))}
       </ul>
