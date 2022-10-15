@@ -49,10 +49,6 @@ span {
   gap: 12px;
 }
 
-.todo-app .task-list .task input {
-  accent-color: #cd283c;
-}
-
 .todo-app .task-list .task * {
   font-size: 22px;
   line-height: 28px;
