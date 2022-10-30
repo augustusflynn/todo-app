@@ -63,7 +63,7 @@ function Date({
           />
         </div>
         <div className="calendar-detail-date">
-          <div className='month'>{currentDateObj.get("month")}/{currentDateObj.get("year")}</div>
+          <div className='month'>{currentDateObj.format("MM/YYYY")}</div>
           <div className='date'>{currentDateObj.get("D")}</div>
           <div ref={timer} className="time" />
         </div>
