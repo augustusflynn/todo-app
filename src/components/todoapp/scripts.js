@@ -12,8 +12,9 @@ const LOCAL_STORAGE_KEY = "TODO_TASK";
 export const createTask = (text, date) => {
   let dataTask = window.localStorage.getItem(LOCAL_STORAGE_KEY);
   dataTask = JSON.parse(dataTask || "[]");
+  const newId = Math.max(...dataTask.map(_task => _task.id))
   const newTask = {
-    id: dataTask.length,
+    id: newId + 1,
     label: text,
     isDone: false,
     datetime: date.toDate().toISOString()
